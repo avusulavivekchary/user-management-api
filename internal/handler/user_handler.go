@@ -50,7 +50,15 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	})
 }
 func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
-	users, err := h.service.ListUsers()
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	limit, _ := strconv.Atoi(c.Query("limit", "10"))
+
+	offset := (page - 1) * limit
+
+	users, err := h.service.ListUsers(
+		int32(limit),
+		int32(offset),
+	)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{
 			"error": err.Error(),

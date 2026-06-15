@@ -38,8 +38,14 @@ func (s *UserService) CreateUser(name string, dob string) (sqlc.User, error) {
 	)
 }
 
-func (s *UserService) ListUsers() ([]sqlc.User, error) {
-	return s.repo.Queries.ListUsers(context.Background())
+func (s *UserService) ListUsers(limit, offset int32) ([]sqlc.User, error) {
+	return s.repo.Queries.ListUsers(
+		context.Background(),
+		sqlc.ListUsersParams{
+			Limit:  limit,
+			Offset: offset,
+		},
+	)
 }
 func (s *UserService) GetUserByID(id int32) (sqlc.User, error) {
 	return s.repo.Queries.GetUserByID(

@@ -7,6 +7,7 @@ import (
 	"github.com/avusulavivekchary/user-management-api/db/sqlc"
 	"github.com/avusulavivekchary/user-management-api/internal/handler"
 	"github.com/avusulavivekchary/user-management-api/internal/logger"
+	"github.com/avusulavivekchary/user-management-api/internal/middleware"
 	"github.com/avusulavivekchary/user-management-api/internal/repository"
 	"github.com/avusulavivekchary/user-management-api/internal/routes"
 	"github.com/avusulavivekchary/user-management-api/internal/service"
@@ -40,6 +41,8 @@ func main() {
 	userHandler := handler.NewUserHandler(userService)
 
 	app := fiber.New()
+	app.Use(middleware.RequestID())
+	app.Use(middleware.RequestLogger())
 
 	app.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
