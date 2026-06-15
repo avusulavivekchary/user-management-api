@@ -1,3 +1,80 @@
+## Project Structure
+
+```text
+cmd/
+└── server/
+    └── main.go
+
+config/
+db/
+├── migrations/
+├── query/
+└── sqlc/
+
+internal/
+├── handler/
+├── logger/
+├── middleware/
+├── models/
+├── repository/
+├── routes/
+└── service/
+```
+
+## Setup
+
+### Prerequisites
+
+* Go 1.24+
+* PostgreSQL
+* Git
+
+### Environment Variables
+
+Create a `.env` file:
+
+```env
+APP_PORT=3000
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_NAME=user_management
+DB_SSLMODE=disable
+```
+
+### Database Setup
+
+Create the database:
+
+```sql
+CREATE DATABASE user_management;
+```
+
+Create the users table:
+
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    dob DATE NOT NULL
+);
+```
+
+## Example Response
+
+### GET /users/1
+
+```json
+{
+  "id": 1,
+  "name": "Alice",
+  "dob": "1990-05-10",
+  "age": 35
+}
+```
+
 \# User Management API
 
 
