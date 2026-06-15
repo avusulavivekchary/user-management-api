@@ -41,3 +41,23 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 		"dob":  user.Dob.Time.Format("2006-01-02"),
 	})
 }
+func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
+	users, err := h.service.ListUsers()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	var response []fiber.Map
+
+	for _, user := range users {
+		response = append(response, fiber.Map{
+			"id":   user.ID,
+			"name": user.Name,
+			"dob":  user.Dob.Time.Format("2006-01-02"),
+		})
+	}
+
+	return c.JSON(response)
+}

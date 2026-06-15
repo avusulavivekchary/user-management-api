@@ -42,6 +42,7 @@ func main() {
 	})
 
 	app.Post("/users", userHandler.CreateUser)
+	app.Get("/users", userHandler.GetUsers)
 
 	log.Println("Server running on port 3000")
 

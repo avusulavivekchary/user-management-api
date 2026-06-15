@@ -37,3 +37,8 @@ func (s *UserService) CreateUser(name string, dob string) (sqlc.User, error) {
 		},
 	)
 }
+
+// ADD THIS BELOW CreateUser
+func (s *UserService) ListUsers() ([]sqlc.User, error) {
+	return s.repo.Queries.ListUsers(context.Background())
+}
