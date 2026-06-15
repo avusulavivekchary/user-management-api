@@ -3,14 +3,15 @@ package main
 import (
 	"log"
 
-	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
-
 	"github.com/avusulavivekchary/user-management-api/config"
 	"github.com/avusulavivekchary/user-management-api/db/sqlc"
 	"github.com/avusulavivekchary/user-management-api/internal/handler"
+	"github.com/avusulavivekchary/user-management-api/internal/logger"
 	"github.com/avusulavivekchary/user-management-api/internal/repository"
+	"github.com/avusulavivekchary/user-management-api/internal/routes"
 	"github.com/avusulavivekchary/user-management-api/internal/service"
+	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -19,12 +20,18 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
+	err = logger.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logger.Log.Sync()
+
 	conn, err := config.ConnectDB()
 	if err != nil {
 		log.Fatal("Database connection failed:", err)
 	}
 
-	log.Println("Database connected successfully")
+	logger.Log.Info("Database connected successfully")
 
 	queries := sqlc.New(conn)
 
@@ -41,12 +48,8 @@ func main() {
 		})
 	})
 
-	app.Post("/users", userHandler.CreateUser)
-	app.Get("/users", userHandler.GetUsers)
-	app.Get("/users/:id", userHandler.GetUserByID)
-	app.Put("/users/:id", userHandler.UpdateUser)
-	app.Delete("/users/:id", userHandler.DeleteUser)
-	log.Println("Server running on port 3000")
+	routes.SetupRoutes(app, userHandler)
+	logger.Log.Info("Server running on port 3000")
 
 	log.Fatal(app.Listen(":3000"))
 }

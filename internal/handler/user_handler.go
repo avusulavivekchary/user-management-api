@@ -3,10 +3,10 @@ package handler
 import (
 	"strconv"
 
-	"github.com/gofiber/fiber/v2"
-
+	"github.com/avusulavivekchary/user-management-api/internal/middleware"
 	"github.com/avusulavivekchary/user-management-api/internal/models"
 	"github.com/avusulavivekchary/user-management-api/internal/service"
+	"github.com/gofiber/fiber/v2"
 )
 
 type UserHandler struct {
@@ -28,15 +28,9 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 		})
 	}
 
-	if req.Name == "" {
+	if err := middleware.Validate.Struct(req); err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "name is required",
-		})
-	}
-
-	if req.DOB == "" {
-		return c.Status(400).JSON(fiber.Map{
-			"error": "dob is required",
+			"error": err.Error(),
 		})
 	}
 
@@ -113,15 +107,9 @@ func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
 			"error": "invalid request",
 		})
 	}
-	if req.Name == "" {
+	if err := middleware.Validate.Struct(req); err != nil {
 		return c.Status(400).JSON(fiber.Map{
-			"error": "name is required",
-		})
-	}
-
-	if req.DOB == "" {
-		return c.Status(400).JSON(fiber.Map{
-			"error": "dob is required",
+			"error": err.Error(),
 		})
 	}
 
@@ -158,7 +146,5 @@ func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.JSON(fiber.Map{
-		"message": "user deleted successfully",
-	})
+	return c.SendStatus(fiber.StatusNoContent)
 }
