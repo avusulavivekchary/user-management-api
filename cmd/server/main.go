@@ -43,7 +43,9 @@ func main() {
 
 	app.Post("/users", userHandler.CreateUser)
 	app.Get("/users", userHandler.GetUsers)
-
+	app.Get("/users/:id", userHandler.GetUserByID)
+	app.Put("/users/:id", userHandler.UpdateUser)
+	app.Delete("/users/:id", userHandler.DeleteUser)
 	log.Println("Server running on port 3000")
 
 	log.Fatal(app.Listen(":3000"))

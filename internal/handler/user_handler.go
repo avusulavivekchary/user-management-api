@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 
 	"github.com/avusulavivekchary/user-management-api/internal/models"
@@ -23,6 +25,18 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "invalid request",
+		})
+	}
+
+	if req.Name == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "name is required",
+		})
+	}
+
+	if req.DOB == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "dob is required",
 		})
 	}
 
@@ -56,8 +70,95 @@ func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
 			"id":   user.ID,
 			"name": user.Name,
 			"dob":  user.Dob.Time.Format("2006-01-02"),
+			"age":  service.CalculateAge(user.Dob.Time),
 		})
 	}
 
 	return c.JSON(response)
+}
+func (h *UserHandler) GetUserByID(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid id",
+		})
+	}
+
+	user, err := h.service.GetUserByID(int32(id))
+	if err != nil {
+		return c.Status(404).JSON(fiber.Map{
+			"error": "user not found",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"id":   user.ID,
+		"name": user.Name,
+		"dob":  user.Dob.Time.Format("2006-01-02"),
+		"age":  service.CalculateAge(user.Dob.Time),
+	})
+}
+func (h *UserHandler) UpdateUser(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid id",
+		})
+	}
+
+	var req models.UpdateUserRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid request",
+		})
+	}
+	if req.Name == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "name is required",
+		})
+	}
+
+	if req.DOB == "" {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "dob is required",
+		})
+	}
+
+	user, err := h.service.UpdateUser(
+		int32(id),
+		req.Name,
+		req.DOB,
+	)
+
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"id":   user.ID,
+		"name": user.Name,
+		"dob":  user.Dob.Time.Format("2006-01-02"),
+	})
+}
+func (h *UserHandler) DeleteUser(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return c.Status(400).JSON(fiber.Map{
+			"error": "invalid id",
+		})
+	}
+
+	err = h.service.DeleteUser(int32(id))
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "user deleted successfully",
+	})
 }
