@@ -1,3 +1,32 @@
+# User Management API
+
+A RESTful API built with Go, Fiber, PostgreSQL, and SQLC to manage users and calculate age dynamically from their date of birth.
+
+## Features
+
+* Create User
+* Get User By ID
+* List All Users
+* Update User
+* Delete User
+* Dynamic Age Calculation
+* Input Validation using go-playground/validator
+* Structured Logging using Uber Zap
+* Pagination Support
+* Request ID Middleware
+* Request Duration Logging Middleware
+* Docker Support
+
+## Tech Stack
+
+* Go
+* Fiber
+* PostgreSQL
+* SQLC
+* Uber Zap
+* go-playground/validator
+* Docker
+
 ## Project Structure
 
 ```text
@@ -6,6 +35,7 @@ cmd/
     └── main.go
 
 config/
+
 db/
 ├── migrations/
 ├── query/
@@ -13,25 +43,25 @@ db/
 
 internal/
 ├── handler/
-├── logger/
-├── middleware/
-├── models/
 ├── repository/
+├── service/
 ├── routes/
-└── service/
+├── middleware/
+├── logger/
+└── models/
 ```
 
-## Setup
+## Prerequisites
 
-### Prerequisites
+Before running the application, make sure the following are installed:
 
-* Go 1.24+
+* Go 1.24 or later
 * PostgreSQL
 * Git
 
-### Environment Variables
+## Environment Variables
 
-Create a `.env` file:
+Create a `.env` file in the project root:
 
 ```env
 APP_PORT=3000
@@ -44,15 +74,19 @@ DB_NAME=user_management
 DB_SSLMODE=disable
 ```
 
-### Database Setup
+## Database Setup
 
-Create the database:
+### Create Database
+
+Connect to PostgreSQL and run:
 
 ```sql
 CREATE DATABASE user_management;
 ```
 
-Create the users table:
+### Create Users Table
+
+Connect to the `user_management` database and run:
 
 ```sql
 CREATE TABLE users (
@@ -62,9 +96,65 @@ CREATE TABLE users (
 );
 ```
 
-## Example Response
+## Clone the Repository
 
-### GET /users/1
+```bash
+git clone https://github.com/avusulavivekchary/user-management-api.git
+cd user-management-api
+```
+
+## Install Dependencies
+
+```bash
+go mod tidy
+```
+
+## Run the Application
+
+Start the API server:
+
+```bash
+go run cmd/server/main.go
+```
+
+If everything is configured correctly, the server will start on:
+
+```text
+http://localhost:3000
+```
+
+## API Endpoints
+
+### Create User
+
+**POST** `/users`
+
+Request:
+
+```json
+{
+  "name": "Alice",
+  "dob": "1990-05-10"
+}
+```
+
+Response:
+
+```json
+{
+  "id": 1,
+  "name": "Alice",
+  "dob": "1990-05-10"
+}
+```
+
+---
+
+### Get User By ID
+
+**GET** `/users/1`
+
+Response:
 
 ```json
 {
@@ -75,161 +165,90 @@ CREATE TABLE users (
 }
 ```
 
-\# User Management API
+---
 
+### List Users
 
+**GET** `/users`
 
-A RESTful User Management API built with Go, Fiber, PostgreSQL, and SQLC.
+Pagination:
 
-
-
-\## Features
-
-
-
-\* Create User
-
-\* Get All Users
-
-\* Get User By ID
-
-\* Update User
-
-\* Delete User
-
-\* Age Calculation
-
-\* Request Validation
-
-\* PostgreSQL Integration
-
-\* SQLC Query Generation
-
-
-
-\## Tech Stack
-
-
-
-\* Go
-
-\* Fiber
-
-\* PostgreSQL
-
-\* SQLC
-
-\* Git
-
-
-
-\## API Endpoints
-
-
-
-\### Create User
-
-
-
-POST /users
-
-
-
-```json
-
-{
-
-&#x20; "name": "Alice",
-
-&#x20; "dob": "1990-05-10"
-
-}
-
+```http
+GET /users?page=1&limit=10
 ```
 
-
-
-\### Get All Users
-
-
-
-GET /users
-
-
-
-\### Get User By ID
-
-
-
-GET /users/:id
-
-
-
-\### Update User
-
-
-
-PUT /users/:id
-
-
+Example Response:
 
 ```json
-
-{
-
-&#x20; "name": "Alice Updated",
-
-&#x20; "dob": "1991-01-01"
-
-}
-
+[
+  {
+    "id": 1,
+    "name": "Alice",
+    "dob": "1990-05-10",
+    "age": 35
+  }
+]
 ```
 
+---
 
+### Update User
 
-\### Delete User
+**PUT** `/users/1`
 
+Request:
 
+```json
+{
+  "name": "Alice Updated",
+  "dob": "1991-01-01"
+}
+```
 
-DELETE /users/:id
+Response:
 
+```json
+{
+  "id": 1,
+  "name": "Alice Updated",
+  "dob": "1991-01-01"
+}
+```
 
+---
 
-\## Run Locally
+### Delete User
 
+**DELETE** `/users/1`
 
+Response:
+
+```http
+204 No Content
+```
+
+## Running Tests
+
+Run all tests:
 
 ```bash
-
-git clone <repository-url>
-
-cd user-management-api
-
-go mod tidy
-
-go run cmd/server/main.go
-
+go test ./...
 ```
 
+## Docker
 
+Build the Docker image:
 
-\## Database
-
-
-
-```sql
-
-CREATE TABLE users (
-
-&#x20;   id SERIAL PRIMARY KEY,
-
-&#x20;   name TEXT NOT NULL,
-
-&#x20;   dob DATE NOT NULL
-
-);
-
+```bash
+docker compose build
 ```
 
+Run the application using Docker:
 
+```bash
+docker compose up
+```
 
+## Author
+
+Avusula Vivek Chary
