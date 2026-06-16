@@ -69,7 +69,7 @@ APP_PORT=3000
 DB_HOST=localhost
 DB_PORT=5432
 DB_USER=postgres
-DB_PASSWORD=your_password
+DB_PASSWORD=*********
 DB_NAME=user_management
 DB_SSLMODE=disable
 ```
